@@ -1,0 +1,6 @@
+{
+  "name": "ManageUser",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./ManageUser.js"
+}
