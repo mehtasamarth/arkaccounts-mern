@@ -9,7 +9,8 @@ exports.create = function (req, res) {
 
     if (!req.body.companyId) {
         var companyDocument = new companyModel({
-            companyName: req.body.companyName
+            companyName: req.body.companyName,
+            companyEmail: req.body.username
         });
 
         companyDocument.save(function (err, newDocument) {

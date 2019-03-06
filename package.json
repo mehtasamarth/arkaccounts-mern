@@ -17,6 +17,10 @@
     "@types/underscore": "^1.8.9"
   },
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "node server.js",
+    "heroku-postbuild": "cd client && npm install --only=dev && npm install && npm run build"
+  },
+  "engines": {
+    "node": "8.12.0"
   }
 }

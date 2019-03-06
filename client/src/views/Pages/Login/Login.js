@@ -9,6 +9,7 @@ import ArkInput from '../../../components/ArkInput/ArkInput'
 
 class Login extends Component {
     state = {
+        formIsValid: false,
         loginValues: {
             username: "",
             password: ""
@@ -16,7 +17,9 @@ class Login extends Component {
         loginRules: {
             username: {
                 required: true,
-                errorMessage: "UserName is Required!",
+                isRegex: true,
+                RegexPattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                errorMessage: "Enter Valid Email!",
                 isValid: false,
                 isTouched: false
             },
@@ -44,6 +47,37 @@ class Login extends Component {
             loginValues: newValue,
             loginRules: updatedRules
         })
+    }
+
+    validateAllFields = () => {
+        let updatedRules = { ...this.state.loginRules };
+        let newValue = { ...this.state.loginValues };
+
+        let formIsValid = true;
+        for (const key of Object.keys(newValue)) {
+            if (updatedRules[key]) {
+                let updatedRuleData = { ...updatedRules[key] };
+                if (!updatedRuleData.isTouched || !updatedRuleData.isValid) {
+                    updatedRuleData.isTouched = true;
+                    updatedRuleData.isValid = validator.checkTextFieldValidity(newValue[key], updatedRuleData);
+                    updatedRules[key] = updatedRuleData;
+                    formIsValid = formIsValid && updatedRuleData.isValid;
+                }
+            }
+        }
+        this.setState({
+            loginValues: newValue,
+            loginRules: updatedRules,
+            formIsValid: formIsValid
+        })
+        return formIsValid;
+    }
+
+    submitClickHander = () => {
+        let formIsValid = this.validateAllFields();
+        if (formIsValid) {
+            this.props.onAuth(this.state.loginValues);
+        }
     }
 
     render() {
@@ -78,6 +112,7 @@ class Login extends Component {
                                                     </InputGroupText>
                                                 </InputGroupAddon>
                                                 <ArkInput type="text" id="username"
+                                                    placeholder="Email"
                                                     onChange={this.OnTextChangeHandler}
                                                     value={this.state.loginValues.username}
                                                     ruleObject={validator.getRuleFromObject(this.state.loginRules, "username")} />
@@ -89,13 +124,14 @@ class Login extends Component {
                                                     </InputGroupText>
                                                 </InputGroupAddon>
                                                 <ArkInput type="password" id="password"
+                                                    placeholder="Password"
                                                     onChange={this.OnTextChangeHandler}
                                                     value={this.state.loginValues.password}
                                                     ruleObject={validator.getRuleFromObject(this.state.loginRules, "password")} />
                                             </InputGroup>
                                             <Row>
                                                 <Col xs="6">
-                                                    <Button color="primary" className="px-4" onClick={() => this.props.onAuth(this.state.loginValues)}>Login</Button>
+                                                    <Button color="primary" className="px-4" onClick={this.submitClickHander}>Login</Button>
                                                 </Col>
                                                 <Col xs="6" className="text-right">
                                                     <Button color="link" className="px-0">Forgot password?</Button>

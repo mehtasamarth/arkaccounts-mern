@@ -9,6 +9,8 @@ export const authStart = () => {
 };
 
 export const authSuccess = (userId, companyId) => {
+    localStorage.setItem('userId', userId);
+    localStorage.setItem('companyId', companyId);
     return {
         type: actionTypes.AUTH_SUCCESS,
         companyId: companyId,
@@ -38,8 +40,6 @@ export const auth = (loginDetails) => {
                         let userId = response.data.responseData._id;
                         let companyId = response.data.responseData.companyId ? response.data.responseData.companyId : null;
                         // console.log(userId, companyId);
-                        localStorage.setItem('userId', userId);
-                        localStorage.setItem('companyId', companyId);
                         dispatch(authSuccess(userId, companyId));
                     }
                     else {

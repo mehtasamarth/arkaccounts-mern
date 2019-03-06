@@ -8,7 +8,12 @@ var CompanySchema = new Schema({
     },
     contactName: String,
     userId: Schema.Types.ObjectId,
-    companyEmail: String,
+    companyEmail: {
+        type: String,
+        required: [true, "username is required"],
+        unique: true,
+        dropDups: true
+    },
     companyPhoneNo: String,
     addressLine1: String,
     pincode: String,

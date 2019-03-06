@@ -26,7 +26,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 
-var port = process.env.PORT || 8080;        // set our port
+var port = process.env.PORT || 8000;        // set our port
 
 // ROUTES FOR OUR API
 var companyRouter = require('./routes/company.route');
@@ -36,11 +36,11 @@ var accountRouter = require('./routes/account.route');
 var transactionRouter = require('./routes/transaction.route');
 
 // REGISTER OUR ROUTES -------------------------------
-app.use('/company', companyRouter);
-app.use('/user', userRouter);
-app.use('/product', productRouter);
-app.use('/account', accountRouter);
-app.use('/transaction', transactionRouter);
+app.use('/api/company', companyRouter);
+app.use('/api/user', userRouter);
+app.use('/api/product', productRouter);
+app.use('/api/account', accountRouter);
+app.use('/api/transaction', transactionRouter);
 app.use(express.static(path.join(__dirname, "client", "build")))
 
 app.get("*", (req, res) => {

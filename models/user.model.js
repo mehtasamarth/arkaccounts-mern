@@ -4,7 +4,9 @@ var Schema = mongoose.Schema;
 var UserSchema = new Schema({
     username: {
         type: String,
-        required: [true, "username is required"]
+        required: [true, "username is required"],
+        unique : true,
+        dropDups: true
     },
     firstName: String,
     lastName: String,
