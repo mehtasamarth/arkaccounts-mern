@@ -3,54 +3,46 @@ import { connect } from 'react-redux';
 import { Link } from "react-router-dom";
 import ArkAlert from '../../components/ArkAlert/ArkAlert'
 import ArkTable from '../../components/ArkTable/ArkTable'
-import * as actions from '../../store/actions/index'
 import {
   Alert,
-  Badge, Button,
-  Card, CardHeader, CardBody,
-  Table
+  Button,
+  Card, CardHeader, CardBody
 } from 'reactstrap';
 import axios from '../../helpers/axios'
 
-class User extends Component {
+class Products extends Component {
   state = {
     tableConfiguration: [
       {
-        header: "Username",
-        dataField: "username",
+        header: "Product Name",
+        dataField: "productName",
         type: "data"
       },
       {
-        header: "Status",
-        dataField: "isActive",
-        type: "badge",
-        badgeConfig: {
-          true: "success",
-          false: "warning"
-        },
-        valueConfig: {
-          true: "Yes",
-          false: "No"
-        }
+        header: "HSN Code",
+        dataField: "productHSN",
+        type: "data"
       },
       {
-        header: "IsAdmin?",
-        dataField: "isAdmin",
-        type: "badge",
-        badgeConfig: {
-          true: "success",
-          false: "warning"
-        },
-        valueConfig: {
-          true: "Yes",
-          false: "No"
-        }
+        header: "Unit Price",
+        dataField: "unitPrice",
+        type: "data"
+      },
+      {
+        header: "Tax",
+        dataField: "taxAmount",
+        type: "data"
+      },
+      {
+        header: "Total Amount",
+        dataField: "totalAmount",
+        type: "data"
       },
       {
         header: "Edit",
         type: "link",
         linkConfig: {
-          linkPath: "./user/manage",
+          linkPath: "./products/manage",
           dataField: "_id",
           btnColor: "primary",
           iconClass: "cui-pencil icons font-xl mt-4"
@@ -58,12 +50,12 @@ class User extends Component {
       },
       {
         header: "Delete",
-        type: "linkMethod",
+        type: "link",
         linkConfig: {
-          linkPath: "./user/manage",
+          linkPath: "./products/manage",
           dataField: "_id",
           btnColor: "primary",
-          iconClass: "cui-pencil icons font-xl mt-4"
+          iconClass: "cui-trash icons font-xl mt-4"
         }
       }
     ],
@@ -72,7 +64,7 @@ class User extends Component {
       alertmessage: null,
       alertType: null
     },
-    user: [],
+    products: [],
     userToDelete: null,
     showDeleteModal: false
   };
@@ -82,14 +74,15 @@ class User extends Component {
   }
 
   updateUsers = () => {
-    axios.post("user/get", {
+    axios.post("product/get", {
       companyId: this.props.companyId
     })
       .then(response => {
+        console.log(response);
         if (response.data && response.data.responseCode === "200") {
           let responseDataArray = response.data.responseData;
           this.setState({
-            user: responseDataArray
+            products: responseDataArray
           })
         }
       })
@@ -162,9 +155,9 @@ class User extends Component {
           {modal}
           <CardHeader>
             Users
-            <Link to="./user/manage">
-              <Button className="float-right" color="primary" onClick={() => this.props.onEditClick(null)}>
-                Add User
+            <Link to="./products/manage">
+              <Button className="float-right" color="primary" >
+                Add Product
               </Button>
             </Link>
           </CardHeader>
@@ -175,50 +168,8 @@ class User extends Component {
             </Alert>
             <ArkTable
               tableConfiguration={this.state.tableConfiguration}
-              data={this.state.user}
+              data={this.state.products}
             />
-            <Table responsive>
-              <thead>
-                <tr>
-                  <th>Username</th>
-                  <th>Status</th>
-                  <th>IsAdmin?</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {
-                  this.state.user.map((user) => {
-                    return <tr key={user._id}>
-                      <td>{user.username}</td>
-                      <td>
-                        <h5>
-                          <Badge color={user.isActive ? "success" : "warning"}>{user.isActive ? "Active" : "Deactive"}</Badge>
-                        </h5>
-                      </td>
-                      <td>
-                        <h5>
-                          <Badge color={user.isAdmin ? "success" : "warning"}>{user.isAdmin ? "Yes" : "No"}</Badge>
-                        </h5>
-                      </td>
-                      <td>
-                        <Button color="primary" disabled={this.props.loggedInUserId === user._id}
-                          onClick={() => this.deleteClickHandler(user)}>
-                          <i className="cui-trash icons font-xl mt-4"></i>
-                        </Button>
-                        &nbsp;
-                        &nbsp;
-                        <Link to="./user/manage">
-                          <Button color="primary" onClick={() => this.props.onEditClick(user._id)}>
-                            <i className="cui-pencil icons font-xl mt-4"></i>
-                          </Button>
-                        </Link>
-                      </td>
-                    </tr>
-                  })
-                }
-              </tbody>
-            </Table>
           </CardBody>
         </Card>
       </div>
@@ -234,10 +185,9 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onEditClick: (editingUserId) => dispatch(actions.setUserEditing(editingUserId)),
-  }
-}
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//   }
+// }
 
-export default connect(mapStateToProps, mapDispatchToProps)(User);
+export default connect(mapStateToProps, null)(Products);

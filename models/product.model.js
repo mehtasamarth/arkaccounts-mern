@@ -1,20 +1,24 @@
 var mongoose = require('mongoose');
+require('mongoose-double')(mongoose);
+
 var Schema = mongoose.Schema;
 
 var ProductSchema = new Schema({
-    productname: {
+    productName: {
         type: String,
         required: true
     },
     companyId: Schema.Types.ObjectId,
     productDescription: String,
     productHSN: String,
-    unitPrice: Schema.Types.Decimal128, 
-    taxAmount: Schema.Types.Decimal128,
-    cgst: Schema.Types.Decimal128,
-    sgst: Schema.Types.Decimal128,
-    igst: Schema.Types.Decimal128,
-    stock: Schema.Types.Decimal128,
+    uom: String,
+    cgst: Schema.Types.Double,
+    sgst: Schema.Types.Double,
+    igst: Schema.Types.Double,
+    unitPrice: Schema.Types.Double, 
+    taxAmount: Schema.Types.Double,
+    totalAmount: Schema.Types.Double,
+    stock: Schema.Types.Double,
     createDate: { type: Date, default: Date.now },
     modifiedDate: { type: Date, default: Date.now },
     createUser: String,
