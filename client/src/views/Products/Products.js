@@ -9,6 +9,8 @@ import {
   Card, CardHeader, CardBody
 } from 'reactstrap';
 import axios from '../../helpers/axios'
+import excelJS from 'exceljs/dist/es5/exceljs.browser'
+import saveAs from 'save-as'
 
 class Products extends Component {
   state = {
@@ -59,6 +61,33 @@ class Products extends Component {
         }
       }
     ],
+    excelDownloadConfiguration: [
+      {
+        header: "Product Name",
+        key: "productName",
+        width: 30
+      },
+      {
+        header: "HSN Code",
+        key: "productHSN",
+        width: 12
+      },
+      {
+        header: "Unit Price",
+        key: "unitPrice",
+        width: 12
+      },
+      {
+        header: "Tax",
+        key: "taxAmount",
+        width: 12
+      },
+      {
+        header: "Total Amount",
+        key: "totalAmount",
+        width: 14
+      }
+    ],
     alert: {
       visible: false,
       alertmessage: null,
@@ -69,8 +98,45 @@ class Products extends Component {
     showDeleteModal: false
   };
 
+
   componentDidMount() {
     this.updateUsers();
+  }
+
+  downloadProducts = () => {
+    var workbook = new excelJS.Workbook();
+    workbook.creator = 'Ark Accounts';
+    workbook.lastModifiedBy = 'Ark Accounts';
+    workbook.created = new Date();
+    workbook.modified = new Date();
+    var sheet = workbook.addWorksheet('My Sheet');
+
+    let borderStyle = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' }
+    }
+
+    sheet.columns = this.state.excelDownloadConfiguration;
+
+    this.state.products.map(row => sheet.addRow(row));
+
+    let columns = [];
+    sheet.columns.map(column => {
+      return columns.push(sheet.getColumn(column.key));
+    })
+
+    columns.map(column => {
+      return column.eachCell((cell, colNumber) => {
+        cell.border = borderStyle
+      });
+    })
+
+    workbook.xlsx.writeBuffer().then(data => {
+      const blob = new Blob([data], { type: 'application/octet-stream' });
+      saveAs(blob, "ark-Products.xlsx");
+    });
   }
 
   updateUsers = () => {
@@ -160,6 +226,11 @@ class Products extends Component {
                 Add Product
               </Button>
             </Link>
+            &nbsp;
+            &nbsp;
+              <Button className="float-right" color="primary" onClick={this.downloadProducts}>
+              Download Products
+              </Button>
           </CardHeader>
           <CardBody>
             <Alert color={this.state.alert.alertType}

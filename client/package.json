@@ -24,6 +24,7 @@
     "core-js": "^2.6.5",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.11.2",
+    "exceljs": "^1.8.0",
     "flag-icon-css": "^3.3.0",
     "font-awesome": "^4.7.0",
     "node-sass": "^4.11.0",
@@ -41,6 +42,7 @@
     "reactstrap": "^7.0.2",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
+    "save-as": "^0.1.8",
     "simple-line-icons": "^2.4.1"
   },
   "devDependencies": {
