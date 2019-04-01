@@ -5,34 +5,29 @@ var dbHelper = require('../helpers/db.helper');
 var responseHelper = require('../helpers/response.helper');
 
 //Simple version, without validation or sanitation
-exports.create = function (req, res) {
-
-    if (!req.body.companyId) {
-        var companyDocument = new companyModel({
-            companyName: req.body.companyName,
-            companyEmail: req.body.username
-        });
-
-        companyDocument.save(function (err, newDocument) {
-            if (err) {
-                responseobject = responseHelper.buildResponseObject(req.body, "100", err.message, "");
-                res.json(responseobject);
-                return;
-            }
-            createUser(req, res, newDocument._id);
-        });
+exports.create = async function (req, res, next) {
+    try {
+        let companyId = req.body.companyId ? req.body.companyId : null;
+        //create Company If it doesnt exist for the user
+        if (!companyId) {
+            var companyDocument = new companyModel({
+                companyName: req.body.companyName,
+                companyEmail: req.body.username,
+                companyEmail: req.body.phoneno
+            });
+            let newCompany = await companyDocument.save();
+            companyId = newCompany._id;
+        }
+        //create User
+        var userDocument = new UserModel({ ...req.body, companyId: companyId });
+        let newUser = await userDocument.save();
+        let responseobject = responseHelper.buildResponseObject(req.body, "200", "User created successfully!", newUser);
+        res.json(responseobject);
     }
-    else {
-        createUser(req, res, req.body.companyId)
+    catch (err) {
+        res.json(responseHelper.buildResponseObject(req.body, "100", err.message, ""));
     }
 };
-
-createUser = (req, res, companyId) => {
-
-    var document = new UserModel({ ...req.body, companyId: companyId });
-    // save the document and check for errors
-    dbHelper.Save(document, req, res);
-}
 
 exports.updateById = function (req, res) {
     dbHelper.UpdateById(UserModel, req, res);

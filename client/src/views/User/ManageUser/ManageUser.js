@@ -21,7 +21,7 @@ class ManageUser extends Component {
       alertType: null
     },
     userValues: {
-      _id: this.props.editingUserId,
+      _id: null,
       username: "",
       companyId: this.props.companyId,
       password: "",
@@ -56,14 +56,14 @@ class ManageUser extends Component {
   };
 
   componentDidMount() {
-    if (this.props.editingUserId) {
+    if (this.props.location.state && this.props.location.state.id) {
       this.getUser();
     }
   }
 
   getUser = () => {
     axios.post("user/get", {
-      _id: this.props.editingUserId
+      _id: this.props.location.state.id
     })
       .then(response => {
         let newUser = {};
@@ -113,8 +113,7 @@ class ManageUser extends Component {
   submitClickHandler = () => {
     let URL = "user/create"
     let alertMessage = "User Created Successfully"
-    if(this.state.userValues._id)
-    {
+    if (this.state.userValues._id) {
       alertMessage = "User Updated Successfully"
       URL = "user/updateById"
     }
@@ -213,8 +212,7 @@ class ManageUser extends Component {
 const mapStateToProps = (state) => {
   return {
     companyId: state.auth.companyId,
-    loggedInUserId: state.auth.userId,
-    editingUserId: state.user.userId
+    loggedInUserId: state.auth.userId
   }
 }
 
