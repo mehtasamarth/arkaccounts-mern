@@ -11,6 +11,7 @@ import {
 import axios from '../../helpers/axios'
 import excelJS from 'exceljs/dist/es5/exceljs.browser'
 import saveAs from 'save-as'
+import { getDate } from '../../helpers/utility'
 
 class Products extends Component {
   state = {
@@ -63,27 +64,22 @@ class Products extends Component {
     ],
     excelDownloadConfiguration: [
       {
-        header: "Product Name",
         key: "productName",
         width: 30
       },
       {
-        header: "HSN Code",
         key: "productHSN",
         width: 12
       },
       {
-        header: "Unit Price",
         key: "unitPrice",
         width: 12
       },
       {
-        header: "Tax",
         key: "taxAmount",
         width: 12
       },
       {
-        header: "Total Amount",
         key: "totalAmount",
         width: 14
       }
@@ -109,7 +105,7 @@ class Products extends Component {
     workbook.lastModifiedBy = 'Ark Accounts';
     workbook.created = new Date();
     workbook.modified = new Date();
-    var sheet = workbook.addWorksheet('My Sheet');
+    var worksheet = workbook.addWorksheet('My Sheet');
 
     let borderStyle = {
       top: { style: 'thin' },
@@ -117,14 +113,41 @@ class Products extends Component {
       bottom: { style: 'thin' },
       right: { style: 'thin' }
     }
+    worksheet.mergeCells('A1:E1');
 
-    sheet.columns = this.state.excelDownloadConfiguration;
+    var date = getDate();
+    worksheet.getCell('E1').alignment = { vertical: 'middle', horizontal: 'center' };;
+    worksheet.getCell('E1').value = 'Ark Accounts - Products - ' + date;
+    let calibriFont = {
+      name: 'Calibri',
+      size: 14,
+      bold: true
+    }
 
-    this.state.products.map(row => sheet.addRow(row));
+    worksheet.getCell('E1').style.font = calibriFont;
+    worksheet.getRow(2).values = ['Product Name', 'HSN Code', 'Unit Price', 'Tax', 'Total Amount'];
+
+
+    worksheet.getCell("A2").fill = {
+      type: 'pattern',
+      pattern: 'darkVertical',
+      fgColor: { argb: 'FF22A7F0' },
+      bgColor: { argb: 'FF22A7F0' }
+    };
+
+    worksheet.getCell("B2").fill = worksheet.getCell("A2").fill;
+    worksheet.getCell("C2").fill = worksheet.getCell("A2").fill;
+    worksheet.getCell("D2").fill = worksheet.getCell("A2").fill;
+    worksheet.getCell("E2").fill = worksheet.getCell("A2").fill;
+
+
+    worksheet.columns = this.state.excelDownloadConfiguration;
+
+    this.state.products.map(row => worksheet.addRow(row));
 
     let columns = [];
-    sheet.columns.map(column => {
-      return columns.push(sheet.getColumn(column.key));
+    worksheet.columns.map(column => {
+      return columns.push(worksheet.getColumn(column.key));
     })
 
     columns.map(column => {
@@ -256,9 +279,5 @@ const mapStateToProps = (state) => {
   }
 }
 
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//   }
-// }
 
 export default connect(mapStateToProps, null)(Products);
