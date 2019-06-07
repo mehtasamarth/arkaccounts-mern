@@ -6,6 +6,7 @@ const User = React.lazy(() => import('./views/User'));
 const Page404 = React.lazy(() => import('./views/Pages/Page404'));
 const ManageUser = React.lazy(() => import('./views/User/ManageUser'));
 const Products = React.lazy(() => import('./views/Products'));
+const Accounts = React.lazy(() => import('./views/Accounts'));
 const ManageProduct = React.lazy(() => import('./views/Products/ManageProducts'));
 
 
@@ -18,6 +19,7 @@ const routes = [
   { path: '/user', name: 'User', component: User, exact:true },
   { path: '/user/manage', name: 'Manage User', component: ManageUser, exact:true },
   { path: '/products', name: 'Products', component: Products, exact:true },
+  { path: '/accounts', name: 'Accounts', component: Accounts, exact:true },
   { path: '/products/manage', name: 'Manage Product', component: ManageProduct, exact:true },
 
 ];

@@ -243,7 +243,7 @@ class Products extends Component {
         <Card>
           {modal}
           <CardHeader>
-            Users
+            Products
             <Link to="./products/manage">
               <Button className="float-right" color="primary" >
                 Add Product

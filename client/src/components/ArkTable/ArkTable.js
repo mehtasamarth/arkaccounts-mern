@@ -58,6 +58,14 @@ const arkTable = (props) => {
                                             </Link>
                                         </td>
                                         break;
+                                    case "delete":
+                                        let linkConfig1 = dataColumn["linkConfig"];
+                                        cellData = <td key={index}>
+                                            <Button color={linkConfig1.btnColor} onClick={() => props.delete(dataRow)}>
+                                                <i className={linkConfig1.iconClass}></i>
+                                            </Button>
+                                        </td>
+                                        break;
                                     default:
                                         cellData = <td key={index}></td>
                                 }

@@ -6,9 +6,8 @@ import ArkTable from '../../components/ArkTable/ArkTable'
 import * as actions from '../../store/actions/index'
 import {
   Alert,
-  Badge, Button,
-  Card, CardHeader, CardBody,
-  Table
+  Button,
+  Card, CardHeader, CardBody
 } from 'reactstrap';
 import axios from '../../helpers/axios'
 
@@ -58,12 +57,12 @@ class User extends Component {
       },
       {
         header: "Delete",
-        type: "linkMethod",
+        type: "delete",
         linkConfig: {
           linkPath: "./user/manage",
           dataField: "_id",
           btnColor: "primary",
-          iconClass: "cui-pencil icons font-xl mt-4"
+          iconClass: "cui-trash icons font-xl mt-4"
         }
       }
     ],
@@ -115,35 +114,50 @@ class User extends Component {
   }
 
   deleteSubmitClicked = () => {
-    axios.post("user/delete", {
-      _id: this.state.userToDelete._id
-    })
-      .then(response => {
-        if (response.data && response.data.responseCode === "200") {
+    if (this.props.loggedInUserId !== this.state.userToDelete._id) {
+      axios.post("user/delete", {
+        _id: this.state.userToDelete._id
+      })
+        .then(response => {
+          if (response.data && response.data.responseCode === "200") {
+            let alert = {
+              visible: true,
+              alertmessage: "User Deleted Successfully",
+              alertType: "success"
+            }
+            this.setState({
+              userToDelete: null,
+              showDeleteModal: false,
+              alert: alert
+            });
+            this.updateUsers();
+            setTimeout(this.onDismiss, 3000);
+          }
+        }).catch(error => {
           let alert = {
             visible: true,
-            alertmessage: "User Deleted Successfully",
-            alertType: "success"
+            alertmessage: "Oops..Something Went Wrong! Try again later!",
+            alertType: "danger"
           }
           this.setState({
-            userToDelete: null,
-            showDeleteModal: false,
             alert: alert
-          });
-          this.updateUsers();
+          })
           setTimeout(this.onDismiss, 3000);
-        }
-      }).catch(error => {
-        let alert = {
-          visible: true,
-          alertmessage: "Oops..Something Went Wrong! Try again later!",
-          alertType: "danger"
-        }
-        this.setState({
-          alert: alert
-        })
-        setTimeout(this.onDismiss, 3000);
-      });
+        });
+    }
+    else {
+      let alert = {
+        visible: true,
+        alertmessage: "Cannot Delete the Master User!",
+        alertType: "danger"
+      }
+      this.setState({
+        userToDelete: null,
+        showDeleteModal: false,
+        alert: alert
+      })
+      setTimeout(this.onDismiss, 3000);
+    }
   }
 
   render() {
@@ -176,49 +190,8 @@ class User extends Component {
             <ArkTable
               tableConfiguration={this.state.tableConfiguration}
               data={this.state.user}
+              delete={this.deleteClickHandler}
             />
-            <Table responsive>
-              <thead>
-                <tr>
-                  <th>Username</th>
-                  <th>Status</th>
-                  <th>IsAdmin?</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {
-                  this.state.user.map((user) => {
-                    return <tr key={user._id}>
-                      <td>{user.username}</td>
-                      <td>
-                        <h5>
-                          <Badge color={user.isActive ? "success" : "warning"}>{user.isActive ? "Active" : "Deactive"}</Badge>
-                        </h5>
-                      </td>
-                      <td>
-                        <h5>
-                          <Badge color={user.isAdmin ? "success" : "warning"}>{user.isAdmin ? "Yes" : "No"}</Badge>
-                        </h5>
-                      </td>
-                      <td>
-                        <Button color="primary" disabled={this.props.loggedInUserId === user._id}
-                          onClick={() => this.deleteClickHandler(user)}>
-                          <i className="cui-trash icons font-xl mt-4"></i>
-                        </Button>
-                        &nbsp;
-                        &nbsp;
-                        <Link to="./user/manage">
-                          <Button color="primary" onClick={() => this.props.onEditClick(user._id)}>
-                            <i className="cui-pencil icons font-xl mt-4"></i>
-                          </Button>
-                        </Link>
-                      </td>
-                    </tr>
-                  })
-                }
-              </tbody>
-            </Table>
           </CardBody>
         </Card>
       </div>
