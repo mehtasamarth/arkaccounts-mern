@@ -61,11 +61,15 @@ class Accounts extends Component {
     catch (err) {
       let alert = {
         visible: true,
-        alertmessage: "Oops..Something Went Wrong!",
+        alertmessage: "Oops..Something Went Wrong! Please refresh the page!",
         alertType: "danger"
       }
+      this.setState({
+        alert: alert
+      });
     }
   }
+
   onDismiss = () => {
     let newAlert = { ...this.state.alert };
     newAlert.visible = false;
