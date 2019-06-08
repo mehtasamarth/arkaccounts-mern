@@ -167,7 +167,6 @@ class Products extends Component {
       companyId: this.props.companyId
     })
       .then(response => {
-        console.log(response);
         if (response.data && response.data.responseCode === "200") {
           let responseDataArray = response.data.responseData;
           this.setState({

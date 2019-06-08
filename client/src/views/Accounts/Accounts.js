@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
+import axios from '../../helpers/axios'
 import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
 import DataTable from 'react-data-table-component';
 import {
   Card, CardHeader, CardBody,
   Col, Row,
-  FormGroup,
-  Label,
   Button,
   Input,
   InputGroup,
@@ -14,7 +13,7 @@ import {
 } from 'reactstrap';
 import SMWidget from '../../components/SMWidget/SMWidget'
 
-
+// https://github.com/jbetancur/react-data-table-component/blob/master/src/themes/default.js
 class Accounts extends Component {
   state = {
     alert: {
@@ -22,31 +21,106 @@ class Accounts extends Component {
       alertmessage: null,
       alertType: null
     },
+    allAccounts: [],
     debitAccounts: [],
-    creditAccounts: []
+    creditAccounts: [],
+    debitTotal: 0.00,
+    creditTotal: 0.00,
+    searchText: ""
   };
 
-
+  OnTextChangeHandler = (event) => {
+    let newValue = event.target.value;
+    this.setState({
+      searchText: newValue
+    });
+    this.populateDebitCreditAccounts(newValue);
+  }
   componentDidMount() {
+    this.getAccounts();
   }
 
+  handleRowClicked = (row, event) => {
+    console.log(row);
+    console.log(event);
+  }
+
+  getAccounts = async () => {
+    try {
+      let URL = "account/get"
+      let res = await axios.post(URL, { companyId: this.props.companyId });
+      let data = res.data;
+
+      if (data && data.responseCode === "200") {
+        this.setState({
+          allAccounts: data.responseData
+        });
+      }
+      this.populateDebitCreditAccounts("");
+    }
+    catch (err) {
+      let alert = {
+        visible: true,
+        alertmessage: "Oops..Something Went Wrong!",
+        alertType: "danger"
+      }
+    }
+  }
   onDismiss = () => {
     let newAlert = { ...this.state.alert };
     newAlert.visible = false;
     this.setState({ alert: newAlert });
   }
 
+  populateDebitCreditAccounts = (searchKey) => {
+
+    let allAccounts = this.state.allAccounts;
+    let searchText = searchKey.length > 2 ? searchKey.toLowerCase() : null;
+    console.log(searchText);
+    let debitAccounts = [];
+    let creditAccounts = [];
+    let cTotal = 0.00;
+    let debitTotal = 0.00;
+
+    if (allAccounts && allAccounts.length > 0) {
+      allAccounts.map((account) => {
+        if (account.acountBalance >= 0) {
+          cTotal += Number(account.acountBalance);
+          if (!searchText) {
+            creditAccounts.push(account)
+          }
+          else if (account.accountName.toLowerCase().includes(searchText)) {
+            creditAccounts.push(account)
+          }
+        }
+        else {
+          let newAccount = { ...account };
+          newAccount.acountBalance = Math.abs(account.acountBalance);
+          debitTotal += Number(account.acountBalance);
+          if (!searchText) {
+            debitAccounts.push(newAccount)
+          }
+          else if (account.accountName.toLowerCase().includes(searchText)) {
+            debitAccounts.push(newAccount)
+          }
+        }
+        return true;
+      })
+
+      this.setState({
+        debitAccounts: debitAccounts,
+        creditAccounts: creditAccounts,
+        creditTotal: cTotal,
+        debitTotal: debitTotal
+      });
+    }
+  }
+
   render() {
-    const data = [{ id: 1, name: "Samarth Mehta", phoneno: "7259181009", amount: "12345.22" },
-    { id: 2, name: "Prerna Gupta", phoneno: "8128998643", amount: "25000.33" },
-    { id: 3, name: "Kumar Trevadia", phoneno: "7259181009", amount: "22345.22" },
-    { id: 4, name: "Samarth Mehta", phoneno: "7259181009", amount: "12345.22" },
-    { id: 5, name: "Prerna Gupta", phoneno: "8128998643", amount: "25000.33" },
-    { id: 6, name: "Kumar Trevadia", phoneno: "7259181009", amount: "22345.22" }];
     const columns = [
       {
         name: 'Account Name',
-        selector: 'name',
+        selector: 'accountName',
         sortable: true
       },
       {
@@ -56,7 +130,7 @@ class Accounts extends Component {
       },
       {
         name: 'Outstanding Amount',
-        selector: 'amount',
+        selector: 'acountBalance',
         sortable: true
       }
     ];
@@ -77,22 +151,20 @@ class Accounts extends Component {
       <div className="animated fadeIn">
         <Row>
           <Col xs="12" sm="4" lg="2">
-            <SMWidget header="1.999,50" mainText="Credit" icon="fa fa-arrow-down" color="success" variant="1" />
+            <SMWidget header={this.state.creditTotal + ""} mainText="Credit" icon="fa fa-arrow-down" color="success" variant="1" />
           </Col>
           <Col xs="12" sm="4" lg="2">
-            <SMWidget header="1.999,50" mainText="Debit" icon="fa fa-arrow-up" color="danger" variant="1" />
+            <SMWidget header={this.state.debitTotal + ""} mainText="Debit" icon="fa fa-arrow-up" color="danger" variant="1" />
           </Col>
           <Col xs="12" sm="4" lg="3">
             <InputGroup>
               <InputGroupAddon addonType="prepend">
                 <Button type="button" color="primary"><i className="fa fa-search"></i> </Button>
               </InputGroupAddon>
-              <Input type="text" id="input1-group2" name="input1-group2" placeholder="Search Accounts" />
+              <Input type="text" id="input1-group2" name="input1-group2"
+                value={this.state.searchText} placeholder="Search Accounts"
+                onChange={this.OnTextChangeHandler} />
             </InputGroup>
-            <FormGroup check inline>
-              <Input className="form-check-input" type="checkbox" id="inline-checkbox1" name="inline-checkbox1" value="option1" />
-              <Label className="form-check-label" check htmlFor="inline-checkbox1">Open Accounts Only</Label>
-            </FormGroup>
           </Col>
           <Col xs="12" sm="4" lg="2">
             <Button color="primary"><i className="fa fa-file-excel-o fa-lg"></i> Download</Button>
@@ -113,10 +185,12 @@ class Accounts extends Component {
                 <DataTable
                   noHeader
                   columns={columns}
-                  data={data}
+                  data={this.state.debitAccounts}
                   highlightOnHover
-                  defaultSortField="name"
+                  defaultSortField="accountName"
                   customTheme={tableTheme}
+                  onRowClicked={this.handleRowClicked}
+                  pointerOnHover
                 />
               </CardBody>
             </Card>
@@ -130,10 +204,13 @@ class Accounts extends Component {
                 <DataTable
                   noHeader
                   columns={columns}
-                  data={data}
+                  data={this.state.creditAccounts}
                   highlightOnHover
-                  defaultSortField="name"
+                  defaultSortField="accountName"
                   customTheme={tableTheme}
+                  keyField="_id"
+                  onRowClicked={this.handleRowClicked}
+                  pointerOnHover
                 />
               </CardBody>
             </Card>
