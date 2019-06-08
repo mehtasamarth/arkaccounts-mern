@@ -1,6 +1,6 @@
 {
-  "name": "ManageProducts",
+  "name": "ManageAccounts",
   "version": "0.0.0",
   "private": true,
-  "main": "./ManageProducts.js"
+  "main": "./ManageAccounts.js"
 }

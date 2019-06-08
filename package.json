@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Test Package",
   "repository": "git",
-  "author": "Samarth Mehta & Ajay Gabani",
+  "author": "Samarth Mehta",
   "license": "UNLICENSED",
   "dependencies": {
     "axios": "^0.18.1",

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
 import DataTable from 'react-data-table-component';
 import {
@@ -97,7 +98,9 @@ class Accounts extends Component {
             <Button color="primary"><i className="fa fa-file-excel-o fa-lg"></i> Download</Button>
           </Col>
           <Col xs="12" sm="4" lg="2">
-            <Button color="primary"><i className="fa fa-plus-square fa-lg"></i> New Account</Button>
+            <Link to="./accounts/manage">
+              <Button color="primary"><i className="fa fa-plus-square fa-lg"></i> New Account</Button>
+            </Link>
           </Col>
         </Row>
         <Row>

@@ -35,6 +35,7 @@ exports.UpdateById = function (Model, req, res) {
 
 function save (document, req, res) {
     document.save(function (err, newDocument) {
+        console.log(newDocument);
         if (err)
             responseobject = responseHelper.buildResponseObject(req.body, "100", err.message, "");
         else

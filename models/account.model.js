@@ -14,8 +14,7 @@ var AccountSchema = new Schema({
         enum: ["party", "expense", "cash"]
     },
     phoneno: String,
-    addressLine1: String,
-    addressLine2: String,
+    address: String,
     pincode: String,
     state: String,
     gtin: String,

@@ -26,6 +26,9 @@ var TransactionSchema = new Schema({
         type: String,
         required: [true, "Account Name is required"]
     },
+    description: {
+        type: String,
+    },
     transactionDetails: [TransactionDetailSchema],
     tax:
     {
@@ -42,7 +45,6 @@ var TransactionSchema = new Schema({
         type: Number,
         default: 0
     },
-    accountRunningBalance: Number,
     isCompleted: Boolean,
     transactionType:
     {
