@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from '../../helpers/axios'
-import { withRouter, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
 import DataTable from 'react-data-table-component';
 import {
@@ -14,7 +14,7 @@ import {
 import SMWidget from '../../components/SMWidget/SMWidget'
 
 // https://github.com/jbetancur/react-data-table-component/blob/master/src/themes/default.js
-class Accounts extends Component {
+class Transactions extends Component {
   state = {
     alert: {
       visible: false,
@@ -36,12 +36,12 @@ class Accounts extends Component {
     });
     this.populateDebitCreditAccounts(newValue);
   }
-  componentDidMount() {
-    this.getAccounts();
-  }
 
-  handleRowClicked = (row, event) => {
-    this.props.history.push("/transactions",{accountDetails: row});
+  componentDidMount() {
+    if (this.props.location.state && this.props.location.state.accountDetails) {
+      console.log(this.props.location.state.accountDetails);
+    }
+    this.getAccounts();
   }
 
   getAccounts = async () => {
@@ -232,4 +232,4 @@ const mapStateToProps = (state) => {
 }
 
 
-export default connect(mapStateToProps, null)(withRouter(Accounts));
+export default connect(mapStateToProps, null)(Transactions);
